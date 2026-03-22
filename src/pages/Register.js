@@ -9,11 +9,13 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [passwordConfirm, setPasswordConfirm] = useState("");
   const [loading, setLoading] = useState(false);
+   const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setLoading(true);
+       setError(""); // clear previous error
     try {
       const res = await api.post("/register", {
         name,
@@ -24,7 +26,8 @@ export default function Register() {
       localStorage.setItem("token", res.data.token);
       navigate("/dashboard");
     } catch (err) {
-      alert(err.response?.data?.message || "Register failed");
+      // alert(err.response?.data?.message || "Register failed");
+       setError(err.response?.data?.message || "Register failed");
     } finally {
       setLoading(false);
     }
@@ -36,6 +39,11 @@ export default function Register() {
         <h2 style={styles.title}>Register</h2>
 
         <form onSubmit={handleRegister} style={styles.form}>
+          {error && (
+  <div style={styles.errorBox}>
+    {error}
+  </div>
+)}
           <div style={styles.field}>
             <label style={styles.label}>Name</label>
             <input
@@ -175,4 +183,13 @@ const styles = {
     textDecoration: "none",
     fontWeight: "500",
   },
+  errorBox: {
+  backgroundColor: "#fdecea",
+  color: "#d32f2f",
+  padding: "10px",
+  borderRadius: "6px",
+  marginBottom: "10px",
+  fontSize: "14px",
+  border: "1px solid #f5c6cb",
+},
 };

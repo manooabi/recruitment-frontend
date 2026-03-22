@@ -2,7 +2,7 @@ import React, { useEffect, useState ,useRef } from "react";
 import api from "../api/api";
 import EmailForm from "../components/EmailForm";
 import { useNavigate } from "react-router-dom";
-
+import Swal from "sweetalert2";
 
 export default function Dashboard() {
    const fileInputRef = useRef(null); // <-- add this
@@ -46,10 +46,24 @@ export default function Dashboard() {
       const res = await api.post("/email-campaigns", formData, {
         headers: { "Content-Type": "multipart/form-data" }
       });
-      alert(res.data.message);
-       if (res.data.duplicates_removed) {
-    alert(res.data.duplicates_removed); // or show a nicer toast
-  }
+      // inside try
+let message = res.data.message;
+
+// if duplicates exist → append message
+if (res.data.duplicates_removed) {
+  message += "\n\n⚠️ " + res.data.duplicates_removed;
+}
+
+Swal.fire({
+  icon: "success",
+  title: "Emails Sent",
+  text: message,
+  confirmButtonColor: "#1E88E5",
+});
+  //     alert(res.data.message);
+  //      if (res.data.duplicates_removed) {
+  //   alert(res.data.duplicates_removed); // or show a nicer toast
+  // }
       // ✅ Reset all form fields
     setSelectedJob("");
     setSubject("");

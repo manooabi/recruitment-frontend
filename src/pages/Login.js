@@ -6,17 +6,21 @@ export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
+     setError(""); // clear previous error
+
     try {
       const res = await api.post("/login", { email, password });
       localStorage.setItem("token", res.data.token);
       navigate("/dashboard");
     } catch (err) {
-      alert(err.response?.data?.message || "Login failed");
+      // alert(err.response?.data?.message || "Login failed");
+       setError(err.response?.data?.message || "Invalid email or password");
     } finally {
       setLoading(false);
     }
@@ -29,6 +33,11 @@ export default function Login() {
 
         <form onSubmit={handleLogin} style={styles.form}>
           <div style={styles.field}>
+            {error && (
+  <div style={styles.errorBox}>
+    {error}
+  </div>
+)}
             <label style={styles.label}>Email</label>
             <input
               type="email"
@@ -143,4 +152,13 @@ const styles = {
     textDecoration: "none",
     fontWeight: "500",
   },
+  errorBox: {
+  backgroundColor: "#fdecea",
+  color: "#d32f2f",
+  padding: "10px",
+  borderRadius: "6px",
+  marginBottom: "10px",
+  fontSize: "14px",
+  border: "1px solid #f5c6cb",
+},
 };
